@@ -12,6 +12,7 @@ contract CrowdFunding {
         string image;
         address[] donators;
         uint256[] donations;
+        string status;
     }
 
     mapping(uint256 => Campaign) public campaigns;
@@ -30,6 +31,7 @@ contract CrowdFunding {
         campaign.deadline = _deadline;
         campaign.amountCollected = 0;
         campaign.image = _image;
+        campaign.status = "live";
 
         numberOfCampaigns++;
 
@@ -57,11 +59,37 @@ contract CrowdFunding {
 
     function getCampaigns() public view returns (Campaign[] memory) {
         Campaign[] memory allCampaigns = new Campaign[](numberOfCampaigns);
+        uint currentTime = block.timestamp;
+        for(uint i = 0; i < numberOfCampaigns; i++) {
+            Campaign storage item = campaigns[i];
+            if(item.deadline >= currentTime)
+                allCampaigns[i] = item;
+        }
+
+        return allCampaigns;
+    }
+
+    function getSuccessfullCampaigns() public view returns (Campaign[] memory) {
+        Campaign[] memory allCampaigns = new Campaign[](numberOfCampaigns);
+        uint currentTime = block.timestamp;
 
         for(uint i = 0; i < numberOfCampaigns; i++) {
             Campaign storage item = campaigns[i];
+            if(item.deadline < currentTime && item.amountCollected >= item.target)
+                allCampaigns[i] = item;
+        }
 
-            allCampaigns[i] = item;
+        return allCampaigns;
+    }
+
+    function getUnSuccessfullCampaigns() public view returns (Campaign[] memory) {
+        Campaign[] memory allCampaigns = new Campaign[](numberOfCampaigns);
+        uint currentTime = block.timestamp;
+
+        for(uint i = 0; i < numberOfCampaigns; i++) {
+            Campaign storage item = campaigns[i];
+            if(item.deadline < currentTime && item.amountCollected < item.target)
+                allCampaigns[i] = item;
         }
 
         return allCampaigns;
