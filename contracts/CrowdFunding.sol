@@ -12,7 +12,7 @@ contract CrowdFunding {
         string image;
         address[] donators;
         uint256[] donations;
-        string status;
+        uint8 status; // 0 for not withdrawn, 1 for withdrawn.
     }
 
     mapping(uint256 => Campaign) public campaigns;
@@ -31,7 +31,7 @@ contract CrowdFunding {
         campaign.deadline = _deadline;
         campaign.amountCollected = 0;
         campaign.image = _image;
-        campaign.status = "live";
+        campaign.status = 0;
 
         numberOfCampaigns++;
 
@@ -94,4 +94,10 @@ contract CrowdFunding {
 
         return allCampaigns;
     }
+
+    function withdrawCampaign(uint256 _id) public {
+        Campaign storage campaign = campaigns[_id];
+        campaign.status = 1;
+    }
+
 }
