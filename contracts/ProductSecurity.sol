@@ -27,6 +27,10 @@ contract ProductStore is ReentrancyGuard, Ownable {
         uint256 isbn;
         bool isListed;
     }
+
+    event productsRegistered (
+        bytes32[] prodcutIds
+    );
     
     mapping(bytes32 => Product) private idToProduct;
     mapping(address => mapping(bytes32 => Product)) public addressToProductIdTodetails;
@@ -48,7 +52,7 @@ contract ProductStore is ReentrancyGuard, Ownable {
         return listingPrice;
     }
 
-    function createProduct(string[] memory _title, string[] memory _description, uint256[] memory _isbn, uint256[] memory _price) public nonReentrant returns (bytes32[] memory){
+    function createProduct(string[] memory _title, string[] memory _description, uint256[] memory _isbn, uint256[] memory _price) public nonReentrant{
 
         uint256 len = _title.length;
 
@@ -79,7 +83,8 @@ contract ProductStore is ReentrancyGuard, Ownable {
             productsid[k] = productid;
             k ++;
         }
-        return productsid;
+
+        emit productsRegistered(productsid);
     }
 
     function listProductForSale(bytes32 productid) public {
